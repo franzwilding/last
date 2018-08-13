@@ -1,0 +1,25 @@
+{
+    "name": "fw/last-bundle",
+    "type": "symfony-bundle",
+    "description": "Static site generator for any Symfony 4 project.",
+    "require": {
+        "symfony/framework-bundle": "^4.1",
+        "symfony/yaml": "^4.1",
+        "symfony/console": "^4.1"
+    },
+    "autoload": {
+        "psr-4": { "Fw\\LastBundle\\": "" },
+        "exclude-from-classmap": [
+            "/Tests/"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": { "Tests\\App\\": "Tests/app/src" }
+    },
+    "authors": [
+        {
+            "name": "Franz Wilding",
+            "email": "franz@unite.co.at"
+        }
+    ]
+}

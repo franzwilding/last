@@ -1,0 +1,6 @@
+services:
+    fw_last.site_generator:
+        class: Fw\LastBundle\Service\SiteGenerator
+        public: true
+        arguments:
+          ['@kernel']

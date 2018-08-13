@@ -21,5 +21,8 @@
             "name": "Franz Wilding",
             "email": "franz@unite.co.at"
         }
-    ]
+    ],
+    "require-dev": {
+        "symfony/phpunit-bridge": "^4.1"
+    }
 }

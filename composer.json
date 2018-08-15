@@ -23,6 +23,8 @@
         }
     ],
     "require-dev": {
-        "symfony/phpunit-bridge": "^4.1"
+        "symfony/phpunit-bridge": "^4.1",
+        "symfony/twig-bundle": "^4.1",
+        "symfony/asset": "^4.1"
     }
 }

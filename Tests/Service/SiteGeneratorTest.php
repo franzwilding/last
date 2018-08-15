@@ -33,7 +33,15 @@ class SiteGeneratorTest extends KernelTestCase
      */
     public function testGeneratingSiteForInvalidRoute() {
         $requests = new RequestStack();
-        $requests->push(Request::create('foo'));
+        $requests->push(Request::create('foo.html'));
+        $this->siteGenerator->generate($requests);
+    }
+
+    public function testGenerateSiteForValidRoutes() {
+        $requests = new RequestStack();
+        $requests->push(Request::create('test_page_1'));
+        $requests->push(Request::create('test_page_2.html', Request::METHOD_POST));
+        $requests->push(Request::create('subdir/any/foo'));
         $this->siteGenerator->generate($requests);
     }
 }

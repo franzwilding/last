@@ -1,3 +1,16 @@
-#index:
-#    path: /
-#    controller: App\Controller\DefaultController::index
+test_page_1:
+    path: test_page_1
+    controller: Tests\App\Controller\TestController::testPage1
+
+test_page_2:
+    path: test_page_2.html
+    methods: [POST]
+    controller: Tests\App\Controller\TestController::testPage2
+
+test_page_3:
+    path: subdir/any/foo
+    controller: Tests\App\Controller\TestController::testPage1
+
+test_page_4:
+    path: foo.json
+    controller: Tests\App\Controller\TestController::testPageJson

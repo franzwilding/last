@@ -17,6 +17,14 @@ class Kernel extends BaseKernel
 
     const CONFIG_EXTS = '.{php,xml,yaml,yml}';
 
+    protected $ignore_conditional_packages;
+
+    public function __construct(string $environment, bool $debug, bool $ignore_conditional_packages = false)
+    {
+        $this->ignore_conditional_packages = $ignore_conditional_packages;
+        parent::__construct($environment, $debug);
+    }
+
     /**
      * Gets the application root dir (path of the project's composer file).
      *
@@ -52,6 +60,12 @@ class Kernel extends BaseKernel
         $container->setParameter('container.autowiring.strict_mode', true);
         $container->setParameter('container.dumper.inline_class_loader', true);
         $confDir = $this->getProjectDir().'/config';
+
+        // Load fw_last config, depending on parameter.
+        if($this->ignore_conditional_packages !== true) {
+            $loader->load($confDir.'/{conditional_packages}/*'.self::CONFIG_EXTS, 'glob');
+            $loader->load($confDir.'/{conditional_packages}/'.$this->environment.'/**/*'.self::CONFIG_EXTS, 'glob');
+        }
 
         $loader->load($confDir.'/{packages}/*'.self::CONFIG_EXTS, 'glob');
         $loader->load($confDir.'/{packages}/'.$this->environment.'/**/*'.self::CONFIG_EXTS, 'glob');

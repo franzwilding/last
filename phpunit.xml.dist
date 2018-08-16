@@ -13,6 +13,7 @@
         <ini name="error_reporting" value="-1" />
         <server name="KERNEL_CLASS" value="Tests\App\Kernel" />
         <server name="KERNEL_DIR" value="Tests/src" />
+        <env name="SHELL_VERBOSITY" value="-1" />
     </php>
 
     <testsuites>

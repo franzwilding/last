@@ -34,16 +34,16 @@ class SiteGenerator
     private $fileSystem;
 
     /**
-     * @var string $dist
+     * @var string $dist_folder
      */
-    private $dist;
+    private $dist_folder;
 
-    public function __construct(HttpKernelInterface $kernel, Router $router, Filesystem $fileSystem)
+    public function __construct(HttpKernelInterface $kernel, Router $router, Filesystem $fileSystem, string $dist_folder)
     {
         $this->router = $router;
         $this->kernel = $kernel;
         $this->fileSystem = $fileSystem;
-        $this->dist = '/Users/franzwilding/Development/last/dist';
+        $this->dist_folder = $dist_folder;
     }
 
     /**
@@ -55,6 +55,10 @@ class SiteGenerator
      */
     public function generate(RequestStack $requestStack) {
 
+        // Clear dist folder.
+        $this->fileSystem->remove($this->dist_folder);
+        $this->fileSystem->mkdir($this->dist_folder);
+
         while ($request = $requestStack->pop()) {
 
             $this->router->getContext()->setParameter('_fw_last', true);
@@ -62,7 +66,7 @@ class SiteGenerator
             try {
                 $response = $this->kernel->handle($request, HttpKernelInterface::MASTER_REQUEST, false);
                 $this->fileSystem->dumpFile(
-                  $this->dist.FileSuffixUrlGenerator::appendSuffix($request->getPathInfo()),
+                  $this->dist_folder.FileSuffixUrlGenerator::appendSuffix($request->getPathInfo()),
                     $response->getContent()
                 );
 

@@ -11,11 +11,19 @@ namespace Fw\LastBundle\Tests\Service;
 
 use Fw\LastBundle\Service\SiteGenerator;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 class SiteGeneratorTest extends KernelTestCase
 {
+
+    private $mocked_dist = 'mocked_dist_folder';
+
+    /**
+     * @var Filesystem $mockedFileSystem
+     */
+    private $mockedFileSystem;
 
     /**
      * @var SiteGenerator $siteGenerator
@@ -24,7 +32,68 @@ class SiteGeneratorTest extends KernelTestCase
 
     public function setUp() {
         static::bootKernel([]);
-        $this->siteGenerator = static::$kernel->getContainer()->get('fw_last.site_generator');
+        $this->mockedFileSystem = $this->createMock(Filesystem::class, ['remove', 'mkdir', 'dumpFile']);
+        $this->siteGenerator = new SiteGenerator(
+          static::$kernel,
+          static::$kernel->getContainer()->get('router'),
+          $this->mockedFileSystem,
+          $this->mocked_dist
+        );
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected static function createKernel(array $options = array())
+    {
+        if (null === static::$class) {
+            static::$class = static::getKernelClass();
+        }
+
+        if (isset($options['environment'])) {
+            $env = $options['environment'];
+        } elseif (isset($_ENV['APP_ENV'])) {
+            $env = $_ENV['APP_ENV'];
+        } elseif (isset($_SERVER['APP_ENV'])) {
+            $env = $_SERVER['APP_ENV'];
+        } else {
+            $env = 'test';
+        }
+
+        if (isset($options['debug'])) {
+            $debug = $options['debug'];
+        } elseif (isset($_ENV['APP_DEBUG'])) {
+            $debug = $_ENV['APP_DEBUG'];
+        } elseif (isset($_SERVER['APP_DEBUG'])) {
+            $debug = $_SERVER['APP_DEBUG'];
+        } else {
+            $debug = true;
+        }
+
+        return new static::$class($env, $debug, isset($options['ignore_conditional_packages']) ? $options['ignore_conditional_packages'] : false);
+    }
+
+    public function testDistFolderDefaultConfiguration() {
+
+        $fileSystem = new Filesystem();
+        $fileSystem->remove(static::$kernel->getCacheDir());
+
+        // Default is '%kernel.project_dir%/dist'
+        $testKernel = static::bootKernel(['ignore_conditional_packages' => true]);
+        $siteGenerator = $testKernel->getContainer()->get('fw_last.site_generator');
+        $accessDist = new \ReflectionProperty($siteGenerator, 'dist_folder');
+        $accessDist->setAccessible(true);
+        $this->assertEquals($testKernel->getContainer()->getParameter('kernel.project_dir') . '/dist', $accessDist->getValue($siteGenerator));
+
+        $fileSystem = new Filesystem();
+        $fileSystem->remove(static::$kernel->getCacheDir());
+
+        // Config is'%kernel.project_dir%/var/dist'
+        $testKernel = static::bootKernel();
+        $siteGenerator = $testKernel->getContainer()->get('fw_last.site_generator');
+        $accessDist = new \ReflectionProperty($siteGenerator, 'dist_folder');
+        $accessDist->setAccessible(true);
+        $this->assertEquals($testKernel->getContainer()->getParameter('kernel.project_dir') . '/var/dist', $accessDist->getValue($siteGenerator));
     }
 
     /**
@@ -34,7 +103,7 @@ class SiteGeneratorTest extends KernelTestCase
     public function testGeneratingSiteForInvalidRoute() {
         $requests = new RequestStack();
         $requests->push(Request::create('foo.html'));
-        $this->siteGenerator->generate($requests);
+        static::$kernel->getContainer()->get('fw_last.site_generator')->generate($requests);
     }
 
     public function testGenerateSiteForValidRoutes() {
@@ -42,6 +111,18 @@ class SiteGeneratorTest extends KernelTestCase
         $requests->push(Request::create('test_page_1'));
         $requests->push(Request::create('test_page_2.html', Request::METHOD_POST));
         $requests->push(Request::create('subdir/any/foo'));
+        $requests->push(Request::create('foo.json'));
+
+        $this->mockedFileSystem->expects($this->once())->method('remove')->with($this->equalTo($this->mocked_dist));
+        $this->mockedFileSystem->expects($this->once())->method('mkdir')->with($this->equalTo($this->mocked_dist));
+
+        $this->mockedFileSystem->expects($this->exactly(4))->method('dumpFile')->withConsecutive(
+          [$this->equalTo($this->mocked_dist.'/foo.json'), $this->equalTo('{ "foo": "baa" }')],
+          [$this->equalTo($this->mocked_dist.'/subdir/any/foo.html'), $this->stringContains('<h1>Test Page 1</h1>')],
+          [$this->equalTo($this->mocked_dist.'/test_page_2.html'), $this->stringContains('<meta http-equiv="refresh" content="0;url=/test_page_1.html" />')],
+        [$this->equalTo($this->mocked_dist.'/test_page_1.html'), $this->stringContains('<h1>Test Page 1</h1>')]
+        );
+
         $this->siteGenerator->generate($requests);
     }
 }

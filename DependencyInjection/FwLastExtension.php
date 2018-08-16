@@ -21,10 +21,15 @@ class FwLastExtension extends Extension
      */
     public function load(array $configs, ContainerBuilder $container)
     {
+        $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
+        $loader->load('services.yaml');
+
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
 
-        $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
-        $loader->load('services.yaml');
+        if(!empty($config['dist_folder'])) {
+            $definition = $container->getDefinition('fw_last.site_generator');
+            $definition->replaceArgument(3, $config['dist_folder']);
+        }
     }
 }

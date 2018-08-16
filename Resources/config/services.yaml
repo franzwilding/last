@@ -1,11 +1,13 @@
 services:
-    fw_last.site_generator:
-        class: Fw\LastBundle\Service\SiteGenerator
-        public: true
-        arguments:
-          ['@kernel', '@router', '@filesystem']
 
     # Extends symfony router to make sure that all routes work as files (e.g. add .html suffix).
     Fw\LastBundle\Router\FileSuffixRouter:
         parent: router
         decorates: router
+
+    # Generates files from routes. dist_folder argument will be replaced by config.
+    fw_last.site_generator:
+        class: Fw\LastBundle\Service\SiteGenerator
+        public: true
+        arguments:
+          ['@kernel', '@router', '@filesystem', '%kernel.project_dir%/dist']

@@ -9,7 +9,6 @@ matrix:
         - php: 7.1
         - php: 7.2
         - php: 7.2
-        - php: 7.2
           if: branch = master
           env: coverage=true
 
@@ -25,7 +24,6 @@ before_install:
       phpenv config-rm xdebug.ini
     fi
   - composer self-update
-  - cp .env.dist .env
 
 install:
   - composer install

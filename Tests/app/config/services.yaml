@@ -1,3 +1,5 @@
 parameters:
 
 services:
+    Tests\App\RouteProvider\TestRouteProvider:
+        tags: ['fw.last.route_provider']

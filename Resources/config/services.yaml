@@ -11,3 +11,8 @@ services:
         public: true
         arguments:
           ['@kernel', '@router', '@filesystem', '%kernel.project_dir%/dist']
+
+    # Holds all routes that got registered by fw.last.rout_providers.
+    fw.last.route_manager:
+        class: Fw\LastBundle\Router\RouteManager
+        public: true

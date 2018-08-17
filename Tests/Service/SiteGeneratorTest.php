@@ -46,31 +46,9 @@ class SiteGeneratorTest extends KernelTestCase
      */
     protected static function createKernel(array $options = array())
     {
-        if (null === static::$class) {
-            static::$class = static::getKernelClass();
-        }
-
-        if (isset($options['environment'])) {
-            $env = $options['environment'];
-        } elseif (isset($_ENV['APP_ENV'])) {
-            $env = $_ENV['APP_ENV'];
-        } elseif (isset($_SERVER['APP_ENV'])) {
-            $env = $_SERVER['APP_ENV'];
-        } else {
-            $env = 'test';
-        }
-
-        if (isset($options['debug'])) {
-            $debug = $options['debug'];
-        } elseif (isset($_ENV['APP_DEBUG'])) {
-            $debug = $_ENV['APP_DEBUG'];
-        } elseif (isset($_SERVER['APP_DEBUG'])) {
-            $debug = $_SERVER['APP_DEBUG'];
-        } else {
-            $debug = true;
-        }
-
-        return new static::$class($env, $debug, isset($options['ignore_conditional_packages']) ? $options['ignore_conditional_packages'] : false);
+        $kernel = parent::createKernel($options);
+        $kernel->ignore_conditional_packages = isset($options['ignore_conditional_packages']) ? $options['ignore_conditional_packages'] : false;
+        return $kernel;
     }
 
     public function testDistFolderDefaultConfiguration() {

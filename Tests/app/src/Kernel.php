@@ -17,13 +17,7 @@ class Kernel extends BaseKernel
 
     const CONFIG_EXTS = '.{php,xml,yaml,yml}';
 
-    protected $ignore_conditional_packages;
-
-    public function __construct(string $environment, bool $debug, bool $ignore_conditional_packages = false)
-    {
-        $this->ignore_conditional_packages = $ignore_conditional_packages;
-        parent::__construct($environment, $debug);
-    }
+    public $ignore_conditional_packages = false;
 
     /**
      * Gets the application root dir (path of the project's composer file).

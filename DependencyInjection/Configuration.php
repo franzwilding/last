@@ -26,6 +26,11 @@ class Configuration implements ConfigurationInterface
         // more information on that topic.
         $rootNode->children()
             ->scalarNode('dist_folder')->end()
+            ->arrayNode('providers')
+              ->children()
+                ->scalarNode('static')->end()
+              ->end()
+          ->end()
         ->end();
 
         return $treeBuilder;

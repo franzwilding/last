@@ -1,3 +1,5 @@
 
 fw_last:
     dist_folder: '%kernel.project_dir%/var/dist'
+    providers:
+        static: false

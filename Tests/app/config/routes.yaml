@@ -14,3 +14,12 @@ test_page_3:
 test_page_4:
     path: foo.json
     controller: Tests\App\Controller\TestController::testPageJson
+
+test_dynaic_page_with_defaul:
+    path: default/{id}
+    defaults: { id: 23 }
+    controller: Tests\App\Controller\TestController::dynamicPage
+
+test_dynaic_page:
+    path: dynamic/{id}
+    controller: Tests\App\Controller\TestController::dynamicPage

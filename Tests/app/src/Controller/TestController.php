@@ -24,4 +24,8 @@ class TestController extends Controller
     public function testPageJson() {
         return new Response('{ "foo": "baa" }');
     }
+
+    public function dynamicPage($id) {
+        return new Response('<html><head><title>ID:'.$id.'</title></head></html>');
+    }
 }

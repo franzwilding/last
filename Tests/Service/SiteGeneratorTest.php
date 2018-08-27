@@ -56,17 +56,18 @@ class SiteGeneratorTest extends KernelTestCase
         $fileSystem = new Filesystem();
         $fileSystem->remove(static::$kernel->getCacheDir());
 
-        // Default is '%kernel.project_dir%/dist'
+        // Default is '%kernel.project_dir%/dist'.
         $testKernel = static::bootKernel(['ignore_conditional_packages' => true]);
         $siteGenerator = $testKernel->getContainer()->get('fw_last.site_generator');
         $accessDist = new \ReflectionProperty($siteGenerator, 'dist_folder');
         $accessDist->setAccessible(true);
         $this->assertEquals($testKernel->getContainer()->getParameter('kernel.project_dir') . '/dist', $accessDist->getValue($siteGenerator));
 
+        // Clear cache.
         $fileSystem = new Filesystem();
         $fileSystem->remove(static::$kernel->getCacheDir());
 
-        // Config is'%kernel.project_dir%/var/dist'
+        // Config is'%kernel.project_dir%/var/dist'.
         $testKernel = static::bootKernel();
         $siteGenerator = $testKernel->getContainer()->get('fw_last.site_generator');
         $accessDist = new \ReflectionProperty($siteGenerator, 'dist_folder');

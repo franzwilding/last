@@ -18,10 +18,9 @@ class RouteProviderPassTest extends KernelTestCase
     public function testCompilerPass() {
         // Make sure, that the test provider was registered.
         static::bootKernel();
-        $this->assertEquals([
-          Request::create('foo'),
-          Request::create('baa'),
-        ], static::$kernel->getContainer()->get('fw.last.route_manager')->getRoutes());
+        $this->assertGreaterThan(2, count(static::$kernel->getContainer()->get('fw.last.route_manager')->getRoutes()));
+        $this->assertEquals(Request::create('foo'), static::$kernel->getContainer()->get('fw.last.route_manager')->getRoutes()[0]);
+        $this->assertEquals(Request::create('baa'), static::$kernel->getContainer()->get('fw.last.route_manager')->getRoutes()[1]);
     }
 
     public function testCompilerPassWithoutRegisteredService() {

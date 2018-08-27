@@ -31,5 +31,10 @@ class FwLastExtension extends Extension
             $definition = $container->getDefinition('fw_last.site_generator');
             $definition->replaceArgument(3, $config['dist_folder']);
         }
+
+        if(isset($config['providers']['static'])) {
+            $definition = $container->getDefinition('Fw\LastBundle\Router\Provider\StaticProvider');
+            $definition->replaceArgument(0, (bool)$config['providers']['static']);
+        }
     }
 }

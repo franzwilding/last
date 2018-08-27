@@ -9,10 +9,17 @@ services:
     fw_last.site_generator:
         class: Fw\LastBundle\Service\SiteGenerator
         public: true
-        arguments:
-          ['@kernel', '@router', '@filesystem', '%kernel.project_dir%/dist']
+        arguments: ['@kernel', '@router', '@filesystem', '%kernel.project_dir%/dist']
 
     # Holds all routes that got registered by fw.last.rout_providers.
     fw.last.route_manager:
         class: Fw\LastBundle\Router\RouteManager
         public: true
+
+
+
+
+    # A provider for all defined routes without placeholders.
+    Fw\LastBundle\Router\Provider\StaticProvider:
+        arguments: [true, '@router']
+        tags: ['fw.last.route_provider']

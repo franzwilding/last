@@ -12,7 +12,6 @@ use Fw\LastBundle\Exception\RouteHandlingException;
 use Fw\LastBundle\Router\FileSuffixUrlGenerator;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 
 class SiteGenerator
@@ -33,40 +32,35 @@ class SiteGenerator
      */
     private $fileSystem;
 
-    /**
-     * @var string $dist_folder
-     */
-    private $dist_folder;
-
-    public function __construct(HttpKernelInterface $kernel, Router $router, Filesystem $fileSystem, string $dist_folder)
+    public function __construct(HttpKernelInterface $kernel, Router $router, Filesystem $fileSystem)
     {
         $this->router = $router;
         $this->kernel = $kernel;
         $this->fileSystem = $fileSystem;
-        $this->dist_folder = $dist_folder;
     }
 
     /**
      * Visits all routes and save the content as html file to dist folder.
      *
-     * @param RequestStack $requestStack
+     * @param array $requests
+     * @param string $dist_folder
      *
      * @throws RouteHandlingException
      */
-    public function generate(RequestStack $requestStack) {
+    public function generate(array $requests, string $dist_folder) : void {
 
         // Clear dist folder.
-        $this->fileSystem->remove($this->dist_folder);
-        $this->fileSystem->mkdir($this->dist_folder);
+        $this->fileSystem->remove($dist_folder);
+        $this->fileSystem->mkdir($dist_folder);
 
-        while ($request = $requestStack->pop()) {
+        foreach($requests as $request) {
 
             $this->router->getContext()->setParameter('_fw_last', true);
 
             try {
                 $response = $this->kernel->handle($request, HttpKernelInterface::MASTER_REQUEST, false);
                 $this->fileSystem->dumpFile(
-                  $this->dist_folder.FileSuffixUrlGenerator::appendSuffix($request->getPathInfo()),
+                  $dist_folder.FileSuffixUrlGenerator::appendSuffix($request->getPathInfo()),
                     $response->getContent()
                 );
 

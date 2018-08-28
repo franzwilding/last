@@ -28,8 +28,8 @@ class FwLastExtension extends Extension
         $config = $this->processConfiguration($configuration, $configs);
 
         if(!empty($config['dist_folder'])) {
-            $definition = $container->getDefinition('fw_last.site_generator');
-            $definition->replaceArgument(3, $config['dist_folder']);
+            $definition = $container->getDefinition('Fw\LastBundle\Command\DumpCommand');
+            $definition->replaceArgument(2, $config['dist_folder']);
         }
 
         if(isset($config['providers']['static'])) {

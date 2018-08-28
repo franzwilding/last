@@ -9,14 +9,17 @@ services:
     fw_last.site_generator:
         class: Fw\LastBundle\Service\SiteGenerator
         public: true
-        arguments: ['@kernel', '@router', '@filesystem', '%kernel.project_dir%/dist']
+        arguments: ['@kernel', '@router', '@filesystem']
 
     # Holds all routes that got registered by fw.last.rout_providers.
     fw.last.route_manager:
         class: Fw\LastBundle\Router\RouteManager
         public: true
 
-
+    # A symfony console command to dump response for all routes to dist folder.
+    Fw\LastBundle\Command\DumpCommand:
+        arguments: ['@fw.last.route_manager', '@fw_last.site_generator', '%kernel.project_dir%/dist']
+        tags: ['console.command']
 
 
     # A provider for all defined routes without placeholders.

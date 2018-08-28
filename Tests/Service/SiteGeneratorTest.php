@@ -8,12 +8,10 @@
 
 namespace Fw\LastBundle\Tests\Service;
 
-
 use Fw\LastBundle\Service\SiteGenerator;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RequestStack;
 
 class SiteGeneratorTest extends KernelTestCase
 {
@@ -32,47 +30,13 @@ class SiteGeneratorTest extends KernelTestCase
 
     public function setUp() {
         static::bootKernel([]);
+        $this->mocked_dist = 'foo';
         $this->mockedFileSystem = $this->createMock(Filesystem::class, ['remove', 'mkdir', 'dumpFile']);
         $this->siteGenerator = new SiteGenerator(
           static::$kernel,
           static::$kernel->getContainer()->get('router'),
-          $this->mockedFileSystem,
-          $this->mocked_dist
+          $this->mockedFileSystem
         );
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected static function createKernel(array $options = array())
-    {
-        $kernel = parent::createKernel($options);
-        $kernel->ignore_conditional_packages = isset($options['ignore_conditional_packages']) ? $options['ignore_conditional_packages'] : false;
-        return $kernel;
-    }
-
-    public function testDistFolderDefaultConfiguration() {
-
-        $fileSystem = new Filesystem();
-        $fileSystem->remove(static::$kernel->getCacheDir());
-
-        // Default is '%kernel.project_dir%/dist'.
-        $testKernel = static::bootKernel(['ignore_conditional_packages' => true]);
-        $siteGenerator = $testKernel->getContainer()->get('fw_last.site_generator');
-        $accessDist = new \ReflectionProperty($siteGenerator, 'dist_folder');
-        $accessDist->setAccessible(true);
-        $this->assertEquals($testKernel->getContainer()->getParameter('kernel.project_dir') . '/dist', $accessDist->getValue($siteGenerator));
-
-        // Clear cache.
-        $fileSystem = new Filesystem();
-        $fileSystem->remove(static::$kernel->getCacheDir());
-
-        // Config is'%kernel.project_dir%/var/dist'.
-        $testKernel = static::bootKernel();
-        $siteGenerator = $testKernel->getContainer()->get('fw_last.site_generator');
-        $accessDist = new \ReflectionProperty($siteGenerator, 'dist_folder');
-        $accessDist->setAccessible(true);
-        $this->assertEquals($testKernel->getContainer()->getParameter('kernel.project_dir') . '/var/dist', $accessDist->getValue($siteGenerator));
     }
 
     /**
@@ -80,18 +44,10 @@ class SiteGeneratorTest extends KernelTestCase
      * @expectedExceptionMessage No route found for "GET /foo
      */
     public function testGeneratingSiteForInvalidRoute() {
-        $requests = new RequestStack();
-        $requests->push(Request::create('foo.html'));
-        static::$kernel->getContainer()->get('fw_last.site_generator')->generate($requests);
+        static::$kernel->getContainer()->get('fw_last.site_generator')->generate([Request::create('foo.html')], $this->mocked_dist);
     }
 
     public function testGenerateSiteForValidRoutes() {
-        $requests = new RequestStack();
-        $requests->push(Request::create('test_page_1'));
-        $requests->push(Request::create('test_page_2.html', Request::METHOD_POST));
-        $requests->push(Request::create('subdir/any/foo'));
-        $requests->push(Request::create('foo.json'));
-
         $this->mockedFileSystem->expects($this->once())->method('remove')->with($this->equalTo($this->mocked_dist));
         $this->mockedFileSystem->expects($this->once())->method('mkdir')->with($this->equalTo($this->mocked_dist));
 
@@ -102,6 +58,11 @@ class SiteGeneratorTest extends KernelTestCase
         [$this->equalTo($this->mocked_dist.'/test_page_1.html'), $this->stringContains('<h1>Test Page 1</h1>')]
         );
 
-        $this->siteGenerator->generate($requests);
+        $this->siteGenerator->generate([
+          Request::create('foo.json'),
+          Request::create('subdir/any/foo'),
+          Request::create('test_page_2.html', Request::METHOD_POST),
+          Request::create('test_page_1')
+        ], $this->mocked_dist);
     }
 }

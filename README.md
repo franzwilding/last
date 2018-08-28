@@ -4,8 +4,8 @@
 [![Build Status](https://travis-ci.org/franzwilding/last.svg?branch=master)](https://travis-ci.org/franzwilding/last)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/e9334f9657fc4a65e24c/test_coverage)](https://codeclimate.com/github/franzwilding/last/test_coverage)
 
-Last is a minimalistic static site generator for Symfony 4 application. Once installed and enabled, Last provides an 
-command that will simply create a request for all of your routes and dumps the result as a static file to a dist folder.
+Last is a minimalistic static site generator for Symfony 4 applications. Once installed, Last provides a 
+command that will simply create requests for all of your routes and dumps the result as a static file to a dist folder.
 
 ## Installation
 *(A symfony/flex recipe will be created soon. )*

@@ -12,22 +12,22 @@ command that will simply create requests for all of your routes and dumps the re
 
     composer require fw/last-bundle
     
-Last should get registered automatically to config/bundles.php, if not add it by hand:
+Last should get registered automatically to config/bundles.php. If not, add it by hand:
 
     ...
     Fw\LastBundle\FwLastBundle::class => ['all' => true],
 
 ## Usage
-Now you can run the dump command and your symfony app gets saved as static html files. 
+Now you can run the dump command and your Symfony app gets exported as static html files. 
 
-    # will dump to the defined dist folder, defaults to %project%/dist
+    # will dump to the configured dist folder, defaults to %project%/dist
     bin/console last:dump 
     
     # wil dump to the given folder
     bin/console last:dump --dist=./custom_dist_folder
     
 ## Is it production ready?
-The core of Last is stable now, however the following is missing yet:
+The core of Last should be stable soon, however the following is missing yet:
 
 - [ ] Provide an symfony/flex recipe
 - [ ] Ask the user before deleting or overriding an existing folder

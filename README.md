@@ -27,8 +27,9 @@ Now you can run the dump command and your Symfony app gets exported as static ht
     bin/console last:dump --dist=./custom_dist_folder
     
 ## Is it production ready?
-The core of Last should be stable soon, however the following is missing yet:
+Soon, however the following is missing yet:
 
+- [ ] Test with more real life projects
 - [ ] Provide an symfony/flex recipe
 - [ ] Ask the user before deleting or overriding an existing folder
 - [ ] Automatically copy assets from public/build, public/bundles/* and other locations to dist folder after dumping
@@ -70,3 +71,8 @@ And needs to be a tagged service, in order to make it visible for Last.
             tags: ['fw.last.route_provider']
 
 Of course you can inject any dependencies like an entity manager to create more advanced providers.
+
+## Troubleshooting
+
+### My links start with `http://localhost/` what should I do?
+Use `{{ path() }}` instead of `{{ url() }}` in your templates to make your urls relative.

@@ -54,6 +54,7 @@ class StaticProviderTest extends KernelTestCase
     public function testServiceReturnsRequests() {
 
         $expectedRequests = [
+          Request::create('/'),
             Request::create('test_page_1'),
             Request::create('test_page_2.html', Request::METHOD_POST),
             Request::create('subdir/any/foo'),
@@ -68,7 +69,7 @@ class StaticProviderTest extends KernelTestCase
         static::bootKernel();
 
         $staticRouteProvider = self::$container->get('Fw\LastBundle\Router\Provider\StaticProvider');
-        $this->assertCount(5, $staticRouteProvider->getRoutes());
+        $this->assertCount(6, $staticRouteProvider->getRoutes());
         foreach($staticRouteProvider->getRoutes() as $delta => $request) {
             $this->assertEquals($expectedRequests[$delta]->getUri(), $request->getUri());
             $this->assertEquals($expectedRequests[$delta]->getMethod(), $request->getMethod());

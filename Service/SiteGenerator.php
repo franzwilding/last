@@ -59,6 +59,7 @@ class SiteGenerator
 
             try {
                 $response = $this->kernel->handle($request, HttpKernelInterface::MASTER_REQUEST, false);
+
                 $this->fileSystem->dumpFile(
                   $dist_folder.FileSuffixUrlGenerator::appendSuffix($request->getPathInfo()),
                     $response->getContent()

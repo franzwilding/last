@@ -1,3 +1,7 @@
+test_index:
+    path: /
+    controller: Tests\App\Controller\TestController::testPage1
+
 test_page_1:
     path: test_page_1
     controller: Tests\App\Controller\TestController::testPage1

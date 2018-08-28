@@ -51,7 +51,8 @@ class SiteGeneratorTest extends KernelTestCase
         $this->mockedFileSystem->expects($this->once())->method('remove')->with($this->equalTo($this->mocked_dist));
         $this->mockedFileSystem->expects($this->once())->method('mkdir')->with($this->equalTo($this->mocked_dist));
 
-        $this->mockedFileSystem->expects($this->exactly(4))->method('dumpFile')->withConsecutive(
+        $this->mockedFileSystem->expects($this->exactly(5))->method('dumpFile')->withConsecutive(
+          [$this->equalTo($this->mocked_dist.'/index.html'), $this->stringContains('<h1>Test Page 1</h1>')],
           [$this->equalTo($this->mocked_dist.'/foo.json'), $this->equalTo('{ "foo": "baa" }')],
           [$this->equalTo($this->mocked_dist.'/subdir/any/foo.html'), $this->stringContains('<h1>Test Page 1</h1>')],
           [$this->equalTo($this->mocked_dist.'/test_page_2.html'), $this->stringContains('<meta http-equiv="refresh" content="0;url=/test_page_1.html" />')],
@@ -59,6 +60,7 @@ class SiteGeneratorTest extends KernelTestCase
         );
 
         $this->siteGenerator->generate([
+          Request::create('/'),
           Request::create('foo.json'),
           Request::create('subdir/any/foo'),
           Request::create('test_page_2.html', Request::METHOD_POST),

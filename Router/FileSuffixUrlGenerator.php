@@ -26,6 +26,12 @@ class FileSuffixUrlGenerator extends UrlGenerator
             return $path;
         }
         $path_parts = explode('?', $path);
+
+        // If path ends with an "/", transform it to "/index".
+        if(substr($path_parts[0], -1) === '/') {
+            $path_parts[0] .= 'index';
+        }
+
         $path_parts[0].= '.'.static::DEFAULT_SUFFIX;
         return join('?', $path_parts);
     }

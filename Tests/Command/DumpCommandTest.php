@@ -83,7 +83,7 @@ class DumpCommandTest extends KernelTestCase
         $commandTester = new CommandTester($command);
 
         // Test that ->generate() was called with correct arguments.
-        $siteGeneratorMock->expects($this->exactly(3))->method('generate')->withConsecutive(
+        $siteGeneratorMock->expects($this->exactly(4))->method('generate')->withConsecutive(
           [$this->equalTo($testRequests), $this->equalTo($defaultTestDist)],
           [$this->equalTo($testRequests), $this->equalTo($testDist)]
         );
@@ -113,6 +113,14 @@ class DumpCommandTest extends KernelTestCase
         $this->assertContains('Warning! Folder "existing" exists!', $commandTester->getDisplay());
         $this->assertContains('Do you really want to override it? All existing files will be deleted.', $commandTester->getDisplay());
         $this->assertContains('Override? [yes|NO]', $commandTester->getDisplay());
+        $this->assertContains('Start dumping 2 responses as static files to existing folder.', $commandTester->getDisplay());
+        $this->assertContains('Finished dumping.', $commandTester->getDisplay());
+
+        // Test execute command when dist folder exists but pass --force-override
+        $commandTester->execute(['command' => $command->getName(), '--dist' => 'existing', '--force-override' => null]);
+        $this->assertNotContains('Warning! Folder "existing" exists!', $commandTester->getDisplay());
+        $this->assertNotContains('Do you really want to override it? All existing files will be deleted.', $commandTester->getDisplay());
+        $this->assertNotContains('Override? [yes|NO]', $commandTester->getDisplay());
         $this->assertContains('Start dumping 2 responses as static files to existing folder.', $commandTester->getDisplay());
         $this->assertContains('Finished dumping.', $commandTester->getDisplay());
     }

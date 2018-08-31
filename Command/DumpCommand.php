@@ -56,6 +56,7 @@ class DumpCommand extends Command
             ->setDescription('Dumps static files to dist folder for all defined requests.')
             ->setHelp('This command runs all defined requests against your application and dumps the responses as static files to the dist folder.')
             ->addOption('dist', 'd', InputOption::VALUE_OPTIONAL, 'Set output dir. If left empty, the default one will be used. ATTENTION: All existing files at this location will be deleted!')
+            ->addOption('force-override', null, InputOption::VALUE_NONE, 'Do not ask to override any eixsting files, just override them.')
         ;
     }
 
@@ -66,7 +67,7 @@ class DumpCommand extends Command
         $dist_folder = $input->getOption('dist') ?? $this->defaultDistFolder;
 
         // Check if folder exists and show warning.
-        if($this->filesystem->exists($dist_folder)) {
+        if(!$input->getOption('force-override') && $this->filesystem->exists($dist_folder)) {
             $output->writeln([
               '',
               '<question>Warning! Folder "'.$dist_folder.'" exists!</question>',

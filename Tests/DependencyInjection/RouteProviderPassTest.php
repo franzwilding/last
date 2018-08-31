@@ -11,7 +11,6 @@ namespace Fw\LastBundle\Tests\DependencyInjection;
 use Fw\LastBundle\DependencyInjection\Compiler\RouteProviderPass;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\HttpFoundation\Request;
 
 class RouteProviderPassTest extends KernelTestCase
 {
@@ -19,8 +18,8 @@ class RouteProviderPassTest extends KernelTestCase
         // Make sure, that the test provider was registered.
         static::bootKernel();
         $this->assertGreaterThan(2, count(static::$kernel->getContainer()->get('fw.last.route_manager')->getRoutes()));
-        $this->assertEquals(Request::create('foo'), static::$kernel->getContainer()->get('fw.last.route_manager')->getRoutes()[0]);
-        $this->assertEquals(Request::create('baa'), static::$kernel->getContainer()->get('fw.last.route_manager')->getRoutes()[1]);
+        $this->assertEquals('/foo', static::$kernel->getContainer()->get('fw.last.route_manager')->getRoutes()[0]->getPathInfo());
+        $this->assertEquals('/baa', static::$kernel->getContainer()->get('fw.last.route_manager')->getRoutes()[1]->getPathInfo());
     }
 
     public function testCompilerPassWithoutRegisteredService() {

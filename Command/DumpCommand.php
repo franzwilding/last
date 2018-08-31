@@ -14,6 +14,8 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question\ConfirmationQuestion;
+use Symfony\Component\Filesystem\Filesystem;
 
 class DumpCommand extends Command
 {
@@ -33,10 +35,16 @@ class DumpCommand extends Command
      */
     private $siteGenerator;
 
-    public function __construct(RouteManager $routeManager, SiteGenerator $siteGenerator, string $defaultDistFolder)
+    /**
+     * @var Filesystem $filesystem
+     */
+    private $filesystem;
+
+    public function __construct(RouteManager $routeManager, SiteGenerator $siteGenerator, Filesystem $filesystem, string $defaultDistFolder)
     {
         $this->defaultDistFolder = $defaultDistFolder;
         $this->routeManager = $routeManager;
+        $this->filesystem = $filesystem;
         $this->siteGenerator = $siteGenerator;
         parent::__construct();
     }
@@ -53,13 +61,30 @@ class DumpCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $output->writeln(['']);
+
         $dist_folder = $input->getOption('dist') ?? $this->defaultDistFolder;
+
+        // Check if folder exists and show warning.
+        if($this->filesystem->exists($dist_folder)) {
+            $output->writeln([
+              '',
+              '<question>Warning! Folder "'.$dist_folder.'" exists!</question>',
+              '<question>Do you really want to override it? All existing files will be deleted.</question>',
+              ''
+            ]);
+            $question = new ConfirmationQuestion('<comment>Override? [yes|NO]</comment> ', false);
+
+            if (!$this->getHelper('question')->ask($input, $output, $question)) {
+                return;
+            }
+        }
+
         $routes = $this->routeManager->getRoutes();
-
         $output->writeln('Start dumping <info>'.count($routes).'</info> responses as static files to <info>'.$dist_folder.'</info> folder.');
-
         $this->siteGenerator->generate($routes, $dist_folder);
 
         $output->writeln('<info>Finished dumping.</info>');
+        $output->writeln(['', '']);
     }
 }

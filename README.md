@@ -31,7 +31,6 @@ Soon, however the following is missing yet:
 
 - [ ] Test with more real life projects
 - [ ] Provide an symfony/flex recipe
-- [ ] Ask the user before deleting or overriding an existing folder
 - [ ] Automatically copy assets from public/build, public/bundles/* and other locations to dist folder after dumping
 
 ## Configuration

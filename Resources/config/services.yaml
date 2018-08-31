@@ -18,7 +18,7 @@ services:
 
     # A symfony console command to dump response for all routes to dist folder.
     Fw\LastBundle\Command\DumpCommand:
-        arguments: ['@fw.last.route_manager', '@fw_last.site_generator', '%kernel.project_dir%/dist']
+        arguments: ['@fw.last.route_manager', '@fw_last.site_generator', '@filesystem', '%kernel.project_dir%/dist']
         tags: ['console.command']
 
 
